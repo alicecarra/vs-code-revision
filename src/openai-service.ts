@@ -34,17 +34,17 @@ export class OpenAIRevisionService implements IRevisionService {
         const maxTokens = getMaxTokensConfiguration();
         const modelName = getOpenAIModelNameConfiguration();
         const prompt = PromptHelper.getRevisionPrompt(text, language, writingStyle);
-        const response = await this.openaiService.completions.create({
+        const response = await this.openaiService.chat.completions.create({
           model: modelName,
-          prompt: prompt,
+          messages: [{ role: 'user', content: prompt }],
           temperature: 0.3,
           max_tokens: maxTokens,
           top_p: 1.0,
           frequency_penalty: 0.0,
           presence_penalty: 0.0,
         });
-        let result = response.choices[0].text;
-        return result;
+        let result = response.choices[0].message.content;
+        return result ?? "null response lol";
       } catch (error: any) {
         throw error;
       }
@@ -59,17 +59,18 @@ export class OpenAIRevisionService implements IRevisionService {
         const maxTokens = getMaxTokensConfiguration();
         const modelName = getOpenAIModelNameConfiguration();
         const prompt = PromptHelper.getTranslationPrompt(text, sourceLanguage, targetLanguage);
-        const response = await this.openaiService.completions.create({
+        const response = await this.openaiService.chat.completions.create({
           model: modelName,
-          prompt: prompt,
+          messages: [{ role: 'user', content: prompt }],
           temperature: 0.3,
           max_tokens: maxTokens,
           top_p: 1.0,
           frequency_penalty: 0.0,
           presence_penalty: 0.0,
         });
-        let result = response.choices[0].text;
-        return result;
+        let result = response.choices[0].message.content;
+        // FIX ME: Not the best null handling...
+        return result ?? "null response lol";
       } catch (error: any) {
         throw error;
       }
